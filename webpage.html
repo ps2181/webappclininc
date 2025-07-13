@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Azure Healthcare Appointment Web App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f7f9fa; color: #222; }
+        header { background: #0078d4; color: #fff; padding: 1.5rem 1rem; }
+        h1 { margin: 0; font-size: 2rem; }
+        main { max-width: 800px; margin: 2rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        h2 { color: #0078d4; }
+        ul, ol { margin-left: 1.5rem; }
+        code, pre { background: #f3f3f3; padding: 2px 6px; border-radius: 4px; }
+        .service { background: #e6f2fb; border-left: 4px solid #0078d4; padding: 1rem; margin: 1rem 0; }
+        .tip { background: #fffbe6; border-left: 4px solid #ffd700; padding: 1rem; margin: 1rem 0; }
+        form { margin-top: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input, select, button { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #0078d4; color: #fff; border: none; cursor: pointer; }
+        button:hover { background: #005a9e; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Azure Healthcare Appointment Web App</h1>
+    </header>
+    <main>
+        <p>
+            This web application is designed to automate patient appointment bookings and notifications. It allows new patient enrollment, uploading past medical history, and viewing doctors’ schedules. Built using Azure services, it is optimized for students using Azure for Students subscriptions.
+        </p>
+
+        <h2>Patient Enrollment</h2>
+        <form id="patient-enrollment-form">
+            <label for="patient-name">Patient Name:</label>
+            <input type="text" id="patient-name" name="patient-name" placeholder="Enter patient name" required>
+
+            <label for="patient-email">Email:</label>
+            <input type="email" id="patient-email" name="patient-email" placeholder="Enter email address" required>
+
+            <label for="patient-phone">Phone Number:</label>
+            <input type="tel" id="patient-phone" name="patient-phone" placeholder="Enter phone number" required>
+
+            <button type="submit">Enroll Patient</button>
+        </form>
+
+        <h2>Upload Medical History</h2>
+        <form id="medical-history-upload-form" enctype="multipart/form-data">
+            <label for="medical-history-file">Upload Medical History (PDF/Image):</label>
+            <input type="file" id="medical-history-file" name="medical-history-file" accept=".pdf,.jpg,.jpeg,.png" required>
+
+            <button type="submit">Upload File</button>
+        </form>
+
+        <h2>Book an Appointment</h2>
+        <form id="appointment-booking-form">
+            <label for="doctor-select">Select Doctor:</label>
+            <select id="doctor-select" name="doctor-select" required>
+                <option value="">-- Select a Doctor --</option>
+                <option value="doctor1">Dr. Smith</option>
+                <option value="doctor2">Dr. Johnson</option>
+                <option value="doctor3">Dr. Lee</option>
+            </select>
+
+            <label for="appointment-date">Appointment Date:</label>
+            <input type="date" id="appointment-date" name="appointment-date" required>
+
+            <label for="appointment-time">Appointment Time:</label>
+            <input type="time" id="appointment-time" name="appointment-time" required>
+
+            <button type="submit">Book Appointment</button>
+        </form>
+
+        <h2>View Doctor Schedules</h2>
+        <form id="view-schedule-form">
+            <label for="schedule-doctor-select">Select Doctor:</label>
+            <select id="schedule-doctor-select" name="schedule-doctor-select" required>
+                <option value="">-- Select a Doctor --</option>
+                <option value="doctor1">Dr. Smith</option>
+                <option value="doctor2">Dr. Johnson</option>
+                <option value="doctor3">Dr. Lee</option>
+            </select>
+
+            <button type="submit">View Schedule</button>
+        </form>
+
+        <div class="tip">
+            <strong>Tip:</strong> Use Azure services like App Service, SQL Database, Blob Storage, and Logic Apps to implement these features efficiently.
+        </div>
+    </main>
+    <script>
+document.getElementById('patient-enrollment-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const res = await fetch('/enroll', { method: 'POST', body: data });
+    alert(await res.text());
+};
+
+document.getElementById('medical-history-upload-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const res = await fetch('/upload', { method: 'POST', body: data });
+    alert(await res.text());
+};
+
+document.getElementById('appointment-booking-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const res = await fetch('/appointments', { method: 'POST', body: data });
+    alert(await res.text());
+};
+
+document.getElementById('view-schedule-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const res = await fetch('/schedules', { method: 'POST', body: data });
+    const schedules = await res.json();
+    alert(JSON.stringify(schedules, null, 2));
+};
+</script>
+</body>
+</html>
