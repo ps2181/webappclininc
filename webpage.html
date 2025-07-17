@@ -26,10 +26,6 @@
         <h1>Azure Healthcare Appointment Web App</h1>
     </header>
     <main>
-        <p>
-            This web application is designed to automate patient appointment bookings and notifications. It allows new patient enrollment, uploading past medical history, and viewing doctors’ schedules. Built using Azure services, it is optimized for students using Azure for Students subscriptions.
-        </p>
-
         <h2>Patient Enrollment</h2>
         <form id="patient-enrollment-form">
             <label for="patient-name">Patient Name:</label>
@@ -52,25 +48,6 @@
             <button type="submit">Upload File</button>
         </form>
 
-        <h2>Book an Appointment</h2>
-        <form id="appointment-booking-form">
-            <label for="doctor-select">Select Doctor:</label>
-            <select id="doctor-select" name="doctor-select" required>
-                <option value="">-- Select a Doctor --</option>
-                <option value="doctor1">Dr. Smith</option>
-                <option value="doctor2">Dr. Johnson</option>
-                <option value="doctor3">Dr. Lee</option>
-            </select>
-
-            <label for="appointment-date">Appointment Date:</label>
-            <input type="date" id="appointment-date" name="appointment-date" required>
-
-            <label for="appointment-time">Appointment Time:</label>
-            <input type="time" id="appointment-time" name="appointment-time" required>
-
-            <button type="submit">Book Appointment</button>
-        </form>
-
         <h2>View Doctor Schedules</h2>
         <form id="view-schedule-form">
             <label for="schedule-doctor-select">Select Doctor:</label>
@@ -84,43 +61,111 @@
             <button type="submit">View Schedule</button>
         </form>
 
-        <div class="tip">
-            <strong>Tip:</strong> Use Azure services like App Service, SQL Database, Blob Storage, and Logic Apps to implement these features efficiently.
-        </div>
+        <h2>Book a Doctor</h2>
+        <form id="doctor-booking-form">
+            <label for="doctor-name">Doctor Name:</label>
+            <input type="text" id="doctor-name" name="doctor-name" placeholder="Enter doctor name" required>
+
+            <label for="doctor-specialty">Specialty:</label>
+            <input type="text" id="doctor-specialty" name="doctor-specialty" placeholder="Enter specialty" required>
+
+            <label for="doctor-email">Email:</label>
+            <input type="email" id="doctor-email" name="doctor-email" placeholder="Enter email address" required>
+
+            <label for="doctor-phone">Phone Number:</label>
+            <input type="tel" id="doctor-phone" name="doctor-phone" placeholder="Enter phone number" required>
+
+            <button type="submit">Book Doctor</button>
+        </form>
     </main>
     <script>
+const backendBaseUrl = "https://clinic-backend-app-dnarfnbyendvhfhr.canadacentral-01.azurewebsites.net";
+
+// Patient Enrollment
 document.getElementById('patient-enrollment-form').onsubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
-    const data = new FormData(form);
-    const res = await fetch('/enroll', { method: 'POST', body: data });
-    alert(await res.text());
+    const data = {
+        name: form['patient-name'].value,
+        email: form['patient-email'].value,
+        phone: form['patient-phone'].value
+    };
+    const res = await fetch(`${backendBaseUrl}/enroll`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        alert("Patient enrolled successfully!");
+    } else {
+        alert("Enrollment failed: " + (await res.text()));
+    }
 };
 
+// Upload Medical History
 document.getElementById('medical-history-upload-form').onsubmit = async function(e) {
     e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const res = await fetch('/upload', { method: 'POST', body: data });
-    alert(await res.text());
+    const fileInput = document.getElementById('medical-history-file');
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("Please select a file.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("medical-history-file", file);
+
+    const res = await fetch(`${backendBaseUrl}/upload`, {
+        method: "POST",
+        body: formData
+    });
+
+    if (res.ok) {
+        alert("File uploaded successfully!");
+    } else {
+        alert("Upload failed: " + (await res.text()));
+    }
 };
 
-document.getElementById('appointment-booking-form').onsubmit = async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const res = await fetch('/appointments', { method: 'POST', body: data });
-    alert(await res.text());
-};
-
+// View Doctor Schedules
 document.getElementById('view-schedule-form').onsubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
-    const data = new FormData(form);
-    const res = await fetch('/schedules', { method: 'POST', body: data });
-    const schedules = await res.json();
-    alert(JSON.stringify(schedules, null, 2));
+    const doctor = form['schedule-doctor-select'].value;
+    const res = await fetch(`${backendBaseUrl}/schedules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ doctor })
+    });
+    if (res.ok) {
+        const schedules = await res.json();
+        alert("Schedules: " + JSON.stringify(schedules));
+    } else {
+        alert("Failed to fetch schedules: " + (await res.text()));
+    }
 };
-</script>
+
+// Book Doctor
+document.getElementById('doctor-booking-form').onsubmit = async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+        doctorName: form['doctor-name'].value,
+        specialty: form['doctor-specialty'].value,
+        email: form['doctor-email'].value,
+        phone: form['doctor-phone'].value
+    };
+    const res = await fetch(`${backendBaseUrl}/book-doctor`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    if (res.ok) {
+        alert("Doctor booked successfully!");
+    } else {
+        alert("Booking failed: " + (await res.text()));
+    }
+};
+    </script>
 </body>
 </html>
