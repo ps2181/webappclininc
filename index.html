@@ -121,12 +121,12 @@ document.getElementById('medical-history-upload-form').onsubmit = async function
     });
 
     if (res.ok) {
-        alert("File uploaded successfully!");
+        const uploadedUrl = await res.text();
+        alert(`File uploaded successfully! URL: ${uploadedUrl}`);
     } else {
         alert("Upload failed: " + (await res.text()));
     }
 };
-
 // View Doctor Schedules
 document.getElementById('view-schedule-form').onsubmit = async function(e) {
     e.preventDefault();
