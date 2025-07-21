@@ -115,7 +115,7 @@ document.getElementById('medical-history-upload-form').onsubmit = async function
     const formData = new FormData();
     formData.append("medical-history-file", file);
 
-    const res = await fetch(`${backendBaseUrl}/upload`, {
+    const res = await fetch(`https://clinicappback-hfhvfmcqcwfebmf4.canadacentral-01.azurewebsites.net/api/uploadmedicalhistory`, {
         method: "POST",
         body: formData
     });
