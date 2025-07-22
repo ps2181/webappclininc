@@ -26,19 +26,20 @@
         <h1>Azure Healthcare Appointment Web App</h1>
     </header>
     <main>
+       
         <h2>Patient Enrollment</h2>
-        <form id="patient-enrollment-form">
-            <label for="patient-name">Patient Name:</label>
-            <input type="text" id="patient-name" name="patient-name" placeholder="Enter patient name" required>
+<form id="patient-enrollment-form">
+    <label for="patient-name">Patient Name:</label>
+    <input type="text" id="patient-name" name="patient-name" placeholder="Enter patient name" required>
 
-            <label for="patient-email">Email:</label>
-            <input type="email" id="patient-email" name="patient-email" placeholder="Enter email address" required>
+    <label for="patient-email">Email:</label>
+    <input type="email" id="patient-email" name="patient-email" placeholder="Enter email address" required>
 
-            <label for="patient-phone">Phone Number:</label>
-            <input type="tel" id="patient-phone" name="patient-phone" placeholder="Enter phone number" required>
+    <label for="patient-phone">Phone Number:</label>
+    <input type="tel" id="patient-phone" name="patient-phone" placeholder="Enter phone number" required>
 
-            <button type="submit">Enroll Patient</button>
-        </form>
+    <button type="submit">Enroll Patient</button>
+</form>
 
         <h2>Upload Medical History</h2>
 <form id="medical-history-upload-form" enctype="multipart/form-data">
@@ -82,22 +83,31 @@ const backendBaseUrl = "https://clinic-backend-app-dnarfnbyendvhfhr.canadacentra
 
 // Patient Enrollment
 document.getElementById('patient-enrollment-form').onsubmit = async function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
+
     const form = e.target;
     const data = {
-        name: form['patient-name'].value,
-        email: form['patient-email'].value,
-        phone: form['patient-phone'].value
+        name: form['patient-name'].value, // Get patient name from the form
+        email: form['patient-email'].value, // Get email from the form
+        phone: form['patient-phone'].value // Get phone number from the form
     };
-    const res = await fetch(`${backendBaseUrl}/enroll`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
-    if (res.ok) {
-        alert("Patient enrolled successfully!");
-    } else {
-        alert("Enrollment failed: " + (await res.text()));
+
+    try {
+        const res = await fetch(`https://clinicappback-hfhvfmcqcwfebmf4.canadacentral-01.azurewebsites.net/api/enrollpatient`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data) // Send data as JSON
+        });
+
+        if (res.ok) {
+            const responseText = await res.text();
+            alert(`Patient enrolled successfully! Response: ${responseText}`);
+        } else {
+            const errorText = await res.text();
+            alert(`Enrollment failed: ${errorText}`);
+        }
+    } catch (error) {
+        alert(`An error occurred: ${error.message}`);
     }
 };
 
